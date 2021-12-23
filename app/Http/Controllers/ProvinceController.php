@@ -43,18 +43,26 @@ class ProvinceController extends Controller
     {
         try {
             $params = $request->only(['name', 'code']);
-            $this->provinceService->createProvince($params);
+            $created = $this->provinceService->createProvince($params);
 
-            return response()->json([
+            $response = [
                 'success' => true,
                 'message' => 'Tạo mới thành công!'
-            ]);
+            ];
+
+            if (!$created) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => true,
                 'message' => 'Có lỗi xảy ra!'
             ]);
         }
-
     }
 }

@@ -29,6 +29,10 @@ class AuthServiceProvider extends ServiceProvider
             if ($user->role == config('constants.ROLES.GENERAL')) return true;
         });
 
+        Gate::define('user-permission-district', function ($user) {
+            if ($user->role == config('constants.ROLES.PROVINCE')) return true;
+        });
+
         Gate::define('permission-manage-user', function ($user) {
             if ($user->role != config('constants.ROLES.HAMLET')) return true;
         });
