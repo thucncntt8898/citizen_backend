@@ -21,6 +21,7 @@ class UserService extends Service
     {
         $params['role'] = Auth::user()->role;
         $params['roles'] = array_values(config('constants.ROLES'));
+        $params['address_id'] = Auth::user()->address_id;
         return $this->userRepository->getListUsers($params);
     }
 

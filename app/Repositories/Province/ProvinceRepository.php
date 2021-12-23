@@ -10,6 +10,7 @@ use App\Models\Ward;
 use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ProvinceRepository extends Repository implements ProvinceRepositoryInterface
 {
@@ -80,18 +81,16 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
     public function createProvince($params)
     {
-
         DB::beginTransaction();
         try {
-
             Province::create(['code'=>sprintf('%02d', $params['code']),'name' => $params['name']]);
             $user = User::create(
+
                 [
-                    'username'=> sprintf('%02d', $params['code']),
-                    'password' => bcrypt('1234567a'),
-                    'address_id' => $params['code'],
-                    'role' => 2,
-                    'status' => 0
+                    'username' => sprintf('%02d', $params['code']),
+                    'password' => Hash::make('citizen' . $params['code']),
+                    'province_id' => $province->id,
+                    'role' => config('constants.ROLES.PROVINCE')
                 ]
             );
             DB::commit();

@@ -18,32 +18,55 @@ class UserRepository extends Repository implements UserRepositoryInterface
 
     public function getListUsers($params)
     {
-        $query = $this->_model->where('users.role', '>', $params['role']);
-        switch ($params['role']) {
-            case $params['roles'][1]:
-                if (!empty($params['province_ids'])) {
-                    $query = $query->leftJoin('provinces', 'provinces.id', '=', 'users.address_id')
-                        ->whereIn('users.address_id', $params['province_ids'])
-                        ->select('provinces.id', 'provinces.name');
-                }
-                break;
-            case $params['roles'][2]:
-                if (!empty($params['district_ids'])) {
-                    $query = $query->leftJoin('districts', 'districts.id', '=', 'users.address_id')
-                        ->leftJoin('provinces', 'provinces.id', '=', 'districts.province_id')
-                        ->whereIn('users.address_id', $params['district_ids'])
-                    ->select('districts.id', 'districts.name', 'province_id');
-                    break;
-                }
-            case $params['roles'][3]:
-                if (!empty($params['ward_ids'])) {
-                    $query = $query->leftJoin('wards', 'wards.id', '=', 'users.address_id')
-                        ->leftJoin('districts', 'districts.id', '=', 'wards.district_id')
-                        ->leftJoin('provinces', 'provinces.id', '=', 'districts.province_id')
-                        ->whereIn('users.address_id', $params['ward_ids']);
-                    break;
-                }
+        $count = $this->__getListUsers($params)->count();
+        if ($count == 0) {
+            return [
+                'count' => 0,
+                'data_list' => []
+            ];
         }
-        return $query->forPage($params['page'], $params['limit'])->get()->toArray();
+
+        $data = $this->__getListUsers($params)
+            ->select(
+                'provinces.id as province_id',
+                'provinces.name as province_name',
+                'districts.id as district_id',
+                'districts.name as district_name',
+                'wards.id as ward_id',
+                'wards.name as ward_name',
+                'hamlets.id as hamlet_id',
+                'hamlets.name as hamlet_name',
+                'users.id',
+                'users.username',
+                'users.status',
+                'users.time_start',
+                'users.time_finish'
+            )
+            ->forPage($params['page'], $params['limit'])->get()->toArray();
+        return [
+            'count' => $count,
+            'data_list' => $data
+        ];
+    }
+
+    public function __getListUsers($params)
+    {
+        $query = $this->_model::leftJoin('provinces', 'provinces.id', '=', 'users.province_id')
+            ->leftJoin('districts', 'districts.id', '=', 'users.district_id')
+            ->leftJoin('wards', 'wards.id', '=', 'users.ward_id')
+            ->leftJoin('hamlets', 'hamlets.id', '=', 'users.hamlet_id')
+            ->where('role', $params['role'] + 1);
+        switch ($params['role']) {
+            case $params['roles'][1]://thanh pho
+                $query = $query->where('districts.province_id', $params['address_id']);
+                break;
+            case $params['roles'][2]://quan huyen
+                $query = $query->where('wards.district_id', $params['address_id']);
+                break;
+            case $params['roles'][3]://phuong xa
+                $query = $query->where('hamlets.ward_id', $params['address_id']);
+                break;
+        }
+        return $query;
     }
 }
