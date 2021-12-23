@@ -65,4 +65,58 @@ class ProvinceController extends Controller
             ]);
         }
     }
+
+    public function updateProvince(Request $request)
+    {
+        try {
+            $params = $request->only(['name', 'id']);
+            $created = $this->provinceService->updateProvince($params);
+
+            $response = [
+                'success' => true,
+                'message' => 'Chỉnh sửa thành công!'
+            ];
+
+            if (!$created) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Có lỗi xảy ra!'
+            ]);
+        }
+    }
+
+    public function deleteProvince($id)
+    {
+        try {
+            $created = $this->provinceService->deleteProvince($id);
+
+            $response = [
+                'success' => true,
+                'message' => 'Xóa thành công!'
+            ];
+
+            if (!$created) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Có lỗi xảy ra!'
+            ]);
+        }
+    }
+
 }

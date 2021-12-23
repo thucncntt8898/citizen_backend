@@ -31,6 +31,8 @@ Route::group(['middleware' => 'auth.api'], function () {
     Route::prefix('province')->middleware('can:user-permission-province')->group(function () {
         Route::get('list', [ProvinceController::class, 'getListProvinces']);
         Route::post('insert', [ProvinceController::class, 'createProvince']);
+        Route::post('update', [ProvinceController::class, 'updateProvince']);
+        Route::delete('/delete/{id}', [ProvinceController::class, 'deleteProvince']);
     });
 
     Route::prefix('district')->middleware('can:user-permission-district')->group(function () {

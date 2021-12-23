@@ -8,6 +8,7 @@ use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
 use App\Repositories\Repository;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ProvinceRepository extends Repository implements ProvinceRepositoryInterface
@@ -77,13 +78,13 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
     }
 
-    public function createProvinces($params)
+    public function createProvince($params)
     {
 
         DB::beginTransaction();
         try {
 
-            Province::create(['code'=>$params['code'],'name' => $params['name']]);
+            Province::create(['code'=>sprintf('%02d', $params['code']),'name' => $params['name']]);
             $user = User::create(
                 [
                     'username'=> sprintf('%02d', $params['code']),
@@ -100,4 +101,48 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
             return false;
         }
     }
+
+    /**
+     * @param $params
+     *
+     * @return bool
+     */
+    public function updateProvince($params)
+    {
+        DB::beginTransaction();
+        try {
+            Province::where('id', $params['id'])->update(
+                [
+                    'name' => $params['name'],
+                    'updated_at' => Carbon::now()
+                ]);
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * @param $id
+     *
+     * @return bool
+     */
+    public function deleteProvince($id)
+    {
+        $provinceCode = Province::where('id', $id)->first()->code;
+
+        DB::beginTransaction();
+        try {
+            User::where('address_id', $provinceCode)->delete();
+            Province::where('id', $id)->delete();
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
 }

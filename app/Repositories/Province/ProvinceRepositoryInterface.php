@@ -6,5 +6,10 @@ interface ProvinceRepositoryInterface
 {
     public function getListProvinces($params);
 
-    public function createProvinces($params);
+    public function createProvince($params);
+
+    public function updateProvince($params);
+
+    public function deleteProvince($id);
+
 }
