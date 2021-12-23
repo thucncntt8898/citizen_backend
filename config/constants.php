@@ -7,5 +7,10 @@ return [
         'DISTRICT' => 3,
         'WARD' => 4,
         'HAMLET' => 5,
+    ],
+
+    'STATUS_USER' => [
+        'OFF' => 0,
+        'ON' => 1
     ]
 ];

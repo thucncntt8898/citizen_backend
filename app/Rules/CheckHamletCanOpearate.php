@@ -2,20 +2,20 @@
 
 namespace App\Rules;
 
-use App\Models\Hamlet;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
-class CheckTimeCanOperate implements Rule
+class CheckHamletCanOpearate implements Rule
 {
-    protected $hamletId;
+    protected $permanentHamlet;
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct($hamletId)
+    public function __construct($permanentHamlet)
     {
-        $this->hamletId = $hamletId;
+        $this->permanentHamlet = $permanentHamlet;
     }
 
     /**
@@ -27,7 +27,11 @@ class CheckTimeCanOperate implements Rule
      */
     public function passes($attribute, $value)
     {
-//        $time = Hamlet::where('id', '')
+        $user = Auth::user();
+        if ($user->address_id == $this->permanentHamlet) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -37,6 +41,6 @@ class CheckTimeCanOperate implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'Bạn không có quyền thao tác!';
     }
 }
