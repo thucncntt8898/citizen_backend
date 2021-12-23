@@ -30,7 +30,9 @@ class ProvinceController extends Controller
      */
     public function getListProvinces(Request $request)
     {
-        $params = $request->only(['province_ids', 'limit', 'page']);
+        $params['province_ids'] = isset($request->province_ids) && empty(array_filter($request->province_ids)) ? [] : $request->province_ids;
+        $params['page'] = empty($request->page) ? 10 : $request->page;
+        $params['limit'] = empty($request->limit) ? 1 : $request->limit;
         $data = $this->provinceService->getListProvinces($params);
 
         return response()->json([
@@ -43,18 +45,26 @@ class ProvinceController extends Controller
     {
         try {
             $params = $request->only(['name', 'code']);
-            $this->provinceService->createProvince($params);
+            $created = $this->provinceService->createProvince($params);
 
-            return response()->json([
+            $response = [
                 'success' => true,
                 'message' => 'Tạo mới thành công!'
-            ]);
+            ];
+
+            if (!$created) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => true,
                 'message' => 'Có lỗi xảy ra!'
             ]);
         }
-
     }
 }

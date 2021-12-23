@@ -10,8 +10,7 @@ class Province extends Model
     protected $guarded = [];
     public $timestamps = false;
 
-    public function districts()
-    {
+    public function districts() {
         return $this->hasMany(District::class, 'province_id', 'id');
     }
 }

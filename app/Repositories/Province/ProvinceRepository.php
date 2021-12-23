@@ -5,8 +5,11 @@ namespace App\Repositories\Province;
 use App\Models\District;
 use App\Models\Hamlet;
 use App\Models\Province;
+use App\Models\User;
 use App\Models\Ward;
 use App\Repositories\Repository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ProvinceRepository extends Repository implements ProvinceRepositoryInterface
 {
@@ -33,13 +36,32 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
                 ->select(
                     'provinces.id',
                     'provinces.name',
-                    'provinces.code'
+                    'provinces.code',
                 )
                 ->forPage($params['page'], $params['limit'])
-                ->get()->toArray();
+                ->get();
+
+            $arrayData = array();
+            foreach ($data as $province) {
+                $countWard = 0;
+                $countHamlet = 0;
+                $province->districts = $province->districts()->get();
+                foreach ($province->districts as $district) {
+                    $district->wards = $district->wards()->get();
+                    $countWard = $countWard + count($district->wards()->get());
+                    foreach ($district->wards as $ward) {
+                        $ward->hamlets = $ward->hamlets()->get();
+                        $countHamlet = $countHamlet + count($ward->hamlets()->get());
+                    }
+                }
+
+                $province->countWard = $countWard;
+                $province->countHamlet = $countHamlet;
+            }
+
             return [
                 'count' => $count,
-                'data_list' => $data
+                'data_list' => $data->toArray()
             ];
         }
     }
@@ -54,5 +76,26 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
         }
         return $query;
 
+    }
+
+    public function createProvinces($params)
+    {
+        DB::beginTransaction();
+        try {
+            $province = Province::create(['code' => sprintf('%02d', $params['code']), 'name' => $params['name']]);
+            User::create(
+                [
+                    'username' => sprintf('%02d', $params['code']),
+                    'password' => Hash::make('citizen' . $params['code']),
+                    'province_id' => $province->id,
+                    'role' => config('constants.ROLES.PROVINCE')
+                ]
+            );
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
     }
 }

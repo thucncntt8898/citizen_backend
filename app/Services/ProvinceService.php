@@ -23,7 +23,7 @@ class ProvinceService extends Service
 
     public function createProvince($params)
     {
-        $this->provinceRepository->create($params);
+        return $this->provinceRepository->createProvinces($params);
     }
 
 }

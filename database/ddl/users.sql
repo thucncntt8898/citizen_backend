@@ -11,6 +11,7 @@ CREATE TABLE `users` (
      `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
      `time_start` datetime DEFAULT NULL ,
      `time_finish` datetime DEFAULT NULL ,
+     `status` int(1) NOT NULL DEFAULT 1,
      PRIMARY KEY (`id`) USING BTREE
 );
 

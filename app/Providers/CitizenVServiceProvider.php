@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\District\DistrictRepository;
+use App\Repositories\District\DistrictRepositoryInterface;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +30,11 @@ class CitizenVServiceProvider extends ServiceProvider implements DeferrableProvi
             \App\Repositories\Citizen\CitizenRepositoryInterface::class,
             \App\Repositories\Citizen\CitizenRepository::class
         );
+
+        $this->app->singleton(
+            DistrictRepositoryInterface::class,
+            DistrictRepository::class
+        );
     }
 
     /**
@@ -50,6 +57,7 @@ class CitizenVServiceProvider extends ServiceProvider implements DeferrableProvi
             \App\Repositories\Province\ProvinceRepositoryInterface::class,
             \App\Repositories\User\UserRepositoryInterface::class,
             \App\Repositories\Citizen\CitizenRepositoryInterface::class,
+            DistrictRepositoryInterface::class,
         ];
     }
 }
