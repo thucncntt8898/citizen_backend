@@ -25,6 +25,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('user-permission-province', function ($user) {
+            if ($user->role == config('constants.ROLES.GENERAL')) return true;
+        });
+
+        Gate::define('permission-manage-user', function ($user) {
+            if ($user->role != config('constants.ROLES.HAMLET')) return true;
+        });
+
+        Gate::define('create-citizen', function ($user) {
+            if ($user->role == config('constants.ROLES.HAMLET')) return true;
+        });
     }
 }

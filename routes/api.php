@@ -2,6 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\CitizenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +18,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('auth')->group(function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::group(['middleware' => 'auth.api'], function () {
+        Route::get('get-user', [AuthController::class, 'getUser']);
+        Route::post('logout', [AuthController::class, 'logout']);
+    });
 });
+
+Route::group(['middleware' => 'auth.api'], function () {
+    Route::prefix('province')->middleware('can:user-permission-province')->group(function () {
+        Route::get('list', [ProvinceController::class, 'getListProvinces']);
+        Route::post('insert', [ProvinceController::class, 'createProvince']);
+    });
+
+    Route::prefix('user')->middleware('can:permission-manage-user')->group(function () {
+        Route::get('list', [UserController::class, 'getListUsers']);
+        Route::post('insert', [UserController::class, 'createUser']);
+    });
+
+    Route::prefix('citizen')->group(function () {
+        Route::get('list', [CitizenController::class, 'getListCitizens']);
+        Route::post('insert', [CitizenController::class, 'createCitizen'])->middleware('can:create-citizen');
+    });
+});
+
+
