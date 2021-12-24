@@ -18,14 +18,24 @@ class DistrictService extends Service
         $this->districtRepository = $districtRepository;
     }
 
-    public function getListDistricts($params, $id)
+    public function getListDistricts($params)
     {
-        return $this->districtRepository->getListDistricts($params, $id);
+        return $this->districtRepository->getListDistricts($params);
     }
 
     public function createDistrict($params)
     {
         return $this->districtRepository->createDistricts($params);
+    }
+
+    public function updateDistrict(array $params)
+    {
+        return $this->districtRepository->updateDistrict($params);
+    }
+
+    public function deleteDistrict(array $params)
+    {
+        return $this->districtRepository->deleteDistrict($params);
     }
 
 }

@@ -83,9 +83,8 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
     {
         DB::beginTransaction();
         try {
-            Province::create(['code'=>sprintf('%02d', $params['code']),'name' => $params['name']]);
-            $user = User::create(
-
+            $province = Province::create(['code' => sprintf('%02d', $params['code']), 'name' => $params['name']]);
+            User::create(
                 [
                     'username' => sprintf('%02d', $params['code']),
                     'password' => Hash::make('citizen' . $params['code']),

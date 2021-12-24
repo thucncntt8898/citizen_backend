@@ -5,6 +5,7 @@ namespace App\Repositories\District;
 use App\Models\District;
 use App\Models\User;
 use App\Repositories\Repository;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -24,7 +25,7 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
 
         DB::beginTransaction();
         try {
-            $provinceCode = Auth::user()->address_id;
+            $provinceCode = sprintf('%02d', Auth::user()->province_id);
             District::create(
                 [
                     'code'=>$params['code'],
@@ -36,7 +37,8 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
                 [
                     'username'=> $provinceCode.sprintf('%02d', $params['code']),
                     'password' => bcrypt('1234567a'),
-                    'address_id' => $provinceCode.sprintf('%02d', $params['code']),
+                    'province_id' => $provinceCode.sprintf('%02d', $params['code']),
+                    'district_id' => sprintf('%02d', $params['code']),
                     'role' => 3,
                     'status' => 0
                 ]
@@ -51,19 +53,18 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
 
     /**
      * @param $params
-     * @param $id
      * @return mixed
      */
-    public function getListDistricts($params, $id)
+    public function getListDistricts($params)
     {
-        $count = $this->__getListDistricts($params, $id)->count();
+        $count = $this->__getListDistricts($params)->count();
         if ($count == 0) {
             return [
                 'count' => 0,
                 'data_list' => []
             ];
         } else {
-            $data = $this->__getListDistricts($params, $id)
+            $data = $this->__getListDistricts($params)
                 ->groupBy('districts.id')
                 ->select(
                     'districts.id',
@@ -91,11 +92,58 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
         }
     }
 
-    public function __getListDistricts($params, $id)
+    public function __getListDistricts($params)
     {
-        $query = $this->_model::where('districts.province_id', '=', $id)
-            ->leftJoin('wards', 'wards.province_id', '=', 'districts.id')
-            ->leftJoin('hamlets', 'hamlets.province_id', '=', 'districts.id');
+        $query = $this->_model::where('districts.province_id', '=', $params['id'])
+            ->leftJoin('wards', 'wards.district_id', '=', 'districts.id')
+            ->leftJoin('hamlets', 'hamlets.district_id', '=', 'districts.id');
         return $query;
+    }
+
+    /**
+     * @param $params
+     *
+     * @return mixed
+     */
+    public function updateDistrict($params)
+    {
+        DB::beginTransaction();
+        try {
+            if (!District::where('id', $params['id'])->exists()) {
+                return false;
+            }
+
+            District::where('id', $params['id'])->update(
+                [
+                    'name' => $params['name'],
+                    'updated_at' => Carbon::now()
+                ]);
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * @param $id
+     *
+     * @return bool
+     */
+    public function deleteDistrict($id)
+    {
+        $code = District::where('id', $id)->first()->code;
+
+        DB::beginTransaction();
+        try {
+            User::where('district_id', $code)->delete();
+            District::where('id', $id)->delete();
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
     }
 }
