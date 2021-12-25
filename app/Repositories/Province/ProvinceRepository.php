@@ -133,7 +133,7 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
         DB::beginTransaction();
         try {
-            User::where('address_id', $provinceCode)->delete();
+            User::where('province_id', $provinceCode)->delete();
             Province::where('id', $id)->delete();
             DB::commit();
             return true;
@@ -141,6 +141,36 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
             DB::rollBack();
             return false;
         }
+    }
+
+    /**
+     *
+     */
+    public function getStatisticalProvinceData() {
+        $data = $this->__getStatisticalProvinceData()
+            ->groupBy('provinces.id')
+            ->select(
+                'provinces.id',
+                'provinces.name',
+                'provinces.code',
+                DB::raw("count(citizens.id) AS total_citizens")
+            )
+            ->orderBy('total_citizens', 'DESC')
+            ->get();
+
+
+        dd($data->toArray());
+        return [
+            'data_list' => $data->toArray()
+        ];
+
+
+
+    }
+
+    public function __getStatisticalProvinceData()
+    {
+        return $this->_model::leftJoin('citizens', 'citizens.province_id', '=', 'provinces.id');
     }
 
 }

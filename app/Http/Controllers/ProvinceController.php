@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProvinceRequest;
 use App\Services\ProvinceService;
 use Illuminate\Http\Request;
 
@@ -41,7 +42,12 @@ class ProvinceController extends Controller
         ]);
     }
 
-    public function createProvince(Request $request)
+    /**
+     * @param StoreProvinceRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createProvince(StoreProvinceRequest $request)
     {
         try {
             $params = $request->only(['name', 'code']);

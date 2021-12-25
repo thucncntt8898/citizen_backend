@@ -12,4 +12,6 @@ interface ProvinceRepositoryInterface
 
     public function deleteProvince($id);
 
+    public function getStatisticalProvinceData();
+
 }

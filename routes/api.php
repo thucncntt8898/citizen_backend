@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\HamletController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,8 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::group(['middleware' => 'auth.api'], function () {
+    Route::get('home', [HomeController::class, 'getStatisticalData']);
+
     Route::prefix('province')->middleware('can:user-permission-province')->group(function () {
         Route::get('list', [ProvinceController::class, 'getListProvinces']);
         Route::post('insert', [ProvinceController::class, 'createProvince']);
