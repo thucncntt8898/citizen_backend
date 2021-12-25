@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Ward;
 
+use App\Models\District;
+use App\Models\Province;
 use App\Models\Ward;
 use App\Models\User;
 use App\Repositories\Repository;
@@ -65,24 +67,26 @@ class WardRepository extends Repository implements WardRepositoryInterface
     {
         DB::beginTransaction();
         try {
-            $provinceCode = sprintf('%02d', Auth::user()->province_id);
-            $districtCode = sprintf('%02d', Auth::user()->district_id);
+            $provinceId = Auth::user()->province_id;
+            $districtId = Auth::user()->district_id;
+            $provinceCode = Province::find($provinceId)->code;
+            $districtCode = District::find($districtId)->code;
 
-            Ward::create(
+            $ward = Ward::create(
                 [
-                    'code'=> $provinceCode.$districtCode.sprintf('%02d', $params['code']),
+                    'code'=> Auth::user()->username.sprintf('%02d', $params['code']),
                     'name' => $params['name'],
-                    'province_id' => $provinceCode,
-                    'district_id' => $districtCode,
+                    'province_id' => $provinceId,
+                    'district_id' => $districtId,
                 ]
             );
             $user = User::create(
                 [
-                    'username'=> $provinceCode.$districtCode.sprintf('%02d', $params['code']),
+                    'username'=> Auth::user()->username.sprintf('%02d', $params['code']),
                     'password' => bcrypt('1234567a'),
-                    'province_id' => $provinceCode,
-                    'district_id' => $districtCode,
-                    'ward_id' => sprintf('%02d', $params['code']),
+                    'province_id' => $provinceId,
+                    'district_id' => $districtId,
+                    'ward_id' => $ward->id,
                     'role' => config('constants.ROLES.WARD'),
                     'status' => 0
                 ]

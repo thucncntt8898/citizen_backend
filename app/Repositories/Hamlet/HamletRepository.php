@@ -2,8 +2,11 @@
 
 namespace App\Repositories\Hamlet;
 
+use App\Models\District;
 use App\Models\Hamlet;
+use App\Models\Province;
 use App\Models\User;
+use App\Models\Ward;
 use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -60,28 +63,31 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
     {
         DB::beginTransaction();
         try {
-            $provinceCode = sprintf('%02d', Auth::user()->province_id);
-            $districtCode = sprintf('%02d', Auth::user()->district_id);
-            $wardCode = sprintf('%02d', Auth::user()->ward_id);
+            $provinceId = Auth::user()->province_id;
+            $districtId = Auth::user()->district_id;
+            $wardId = Auth::user()->ward_id;
+            $provinceCode = Province::find($provinceId)->code;
+            $districtCode = District::find($districtId)->code;
+            $wardCode = Ward::find($wardId)->code;
 
-            Hamlet::create(
+
+            $hamlet = Hamlet::create(
                 [
-                    'code'=> $provinceCode.$districtCode.$wardCode.sprintf('%02d', $params['code']),
+                    'code'=> Auth::user()->username.sprintf('%02d', $params['code']),
                     'name' => $params['name'],
-                    'province_id' => $provinceCode,
-                    'district_id' => $districtCode,
-                    'ward_id' => $wardCode,
-                    'hamlet_id' => sprintf('%02d', $params['code']),
+                    'province_id' => $provinceId,
+                    'district_id' => $districtId,
+                    'ward_id' => $wardId,
                 ]
             );
             $user = User::create(
                 [
-                    'username'=> $provinceCode.$districtCode.$wardCode.sprintf('%02d', $params['code']),
+                    'username'=> Auth::user()->username.sprintf('%02d', $params['code']),
                     'password' => bcrypt('1234567a'),
-                    'province_id' => $provinceCode,
-                    'district_id' => $districtCode,
-                    'ward_id' => $wardCode,
-                    'hamlet_id' => sprintf('%02d', $params['code']),
+                    'province_id' => $provinceId,
+                    'district_id' => $districtId,
+                    'ward_id' => $wardId,
+                    'hamlet_id' => $hamlet->id,
                     'role' => config('constants.ROLES.HAMLET'),
                     'status' => 0
                 ]

@@ -3,6 +3,7 @@
 namespace App\Repositories\District;
 
 use App\Models\District;
+use App\Models\Province;
 use App\Models\User;
 use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
@@ -25,20 +26,21 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
 
         DB::beginTransaction();
         try {
-            $provinceCode = sprintf('%02d', Auth::user()->province_id);
-            District::create(
+            $provinceId = sprintf('%02d', Auth::user()->province_id);
+            $provinceCode = Province::find($provinceId)->code;
+            $district = District::create(
                 [
-                    'code'=>$params['code'],
+                    'code'=> $provinceCode.$params['code'],
                     'name' => $params['name'],
-                    'province_id' => $provinceCode
+                    'province_id' => $provinceId
                 ]
             );
             $user = User::create(
                 [
                     'username'=> $provinceCode.sprintf('%02d', $params['code']),
                     'password' => bcrypt('1234567a'),
-                    'province_id' => $provinceCode.sprintf('%02d', $params['code']),
-                    'district_id' => sprintf('%02d', $params['code']),
+                    'province_id' => $provinceId,
+                    'district_id' => $district->id,
                     'role' => 3,
                     'status' => 0
                 ]
