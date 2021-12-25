@@ -10,7 +10,7 @@ return [
     ],
 
     'STATUS_USER' => [
-        'OFF' => 0,
-        'ON' => 1
+        'OFF' => false,
+        'ON' => true
     ]
 ];

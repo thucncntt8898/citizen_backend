@@ -39,8 +39,25 @@ class UserController extends Controller
     /**
      * @param Request $request
      */
-    public function createUser(Request $request)
+    public function updateUser(Request $request)
     {
+        $userId = $request->user_id;
+        $params['status'] = $request->status;
+        if (!empty($request->password)) {
+            $params['password'] = $request->password;
+        }
+        if (!empty($request->time_start)) {
+            $params['time_start'] = $request->time_start;
+        }
+        if (!empty($request->time_finish)) {
+            $params['time_finish'] = $request->time_finish;
+        }
 
+        $this->userService->updateUser($userId, $params);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật thành công!'
+        ]);
     }
 }
