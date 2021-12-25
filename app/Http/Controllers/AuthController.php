@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -79,7 +80,7 @@ class AuthController extends Controller
         try {
             return response()->json([
                 'success' => true,
-                'data' => Auth::user()
+                'data' => User::with(['province', 'district', 'ward', 'hamlet'])->where('id', Auth::user()->id)->get()
             ]);
         } catch (\Exception $exception) {
             return response()->json([

@@ -28,7 +28,7 @@ class CheckHamletCanOpearate implements Rule
     public function passes($attribute, $value)
     {
         $user = Auth::user();
-        if ($user->address_id == $this->permanentHamlet) {
+        if ($user->hamlet_id == $this->permanentHamlet) {
             return true;
         }
         return false;

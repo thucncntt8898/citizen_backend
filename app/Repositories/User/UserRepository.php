@@ -69,4 +69,29 @@ class UserRepository extends Repository implements UserRepositoryInterface
         }
         return $query;
     }
+
+    public function getUserById($userId)
+    {
+        return $this->_model::where('id', $userId)->first()->toArray();
+    }
+
+    public function getUserByProvinceId($provinceId)
+    {
+        return $this->_model::where('province_id', $provinceId)->pluck('id')->toArray();
+    }
+
+    public function getUserByDistrictId($districtId)
+    {
+        return $this->_model::where('district_id', $districtId)->pluck('id')->toArray();
+    }
+
+    public function getUserByWardId($wardId)
+    {
+        return $this->_model::where('ward_id', $wardId)->pluck('id')->toArray();
+    }
+
+    public function getUserByHamletId($hamletId)
+    {
+        return $this->_model::where('hamlet_id', $hamletId)->pluck('id')->toArray();
+    }
 }

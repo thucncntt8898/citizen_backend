@@ -40,11 +40,16 @@ Route::group(['middleware' => 'auth.api'], function () {
 
     Route::prefix('user')->middleware('can:permission-manage-user')->group(function () {
         Route::get('list', [UserController::class, 'getListUsers']);
-        Route::post('insert', [UserController::class, 'createUser']);
+        Route::post('update', [UserController::class, 'updateUser']);
     });
 
     Route::prefix('citizen')->group(function () {
         Route::get('list', [CitizenController::class, 'getListCitizens']);
+        Route::post('insert', [CitizenController::class, 'createCitizen'])->middleware('can:create-citizen');
+    });
+
+    Route::prefix('occupation')->group(function () {
+        Route::get('list', [\App\Http\Controllers\OccupationController::class, 'getListOccupations']);
         Route::post('insert', [CitizenController::class, 'createCitizen'])->middleware('can:create-citizen');
     });
 });

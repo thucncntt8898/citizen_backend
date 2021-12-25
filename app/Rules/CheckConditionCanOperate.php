@@ -45,6 +45,6 @@ class CheckConditionCanOperate implements Rule
      */
     public function message()
     {
-        return 'Ngoài thời gian khai báo!';
+        return 'Tài khoản bị khóa hoặc ngoài thời gian khai báo! Vui lòng liên hệ admin để được cấp quyền khai báo!';
     }
 }
