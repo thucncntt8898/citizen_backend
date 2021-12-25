@@ -26,13 +26,12 @@ class DistrictController extends Controller
 
     /**
      * @param Request $request
-     * @param $id
      * @return JsonResponse
      */
-    public function getListDistricts(Request $request, $id)
+    public function getListDistricts(Request $request)
     {
-        $params = $request->only(['limit', 'page', 'province_id']);
-        $data = $this->districtService->getListDistricts($params, $id);
+        $params = $request->only(['limit', 'page', 'id']);
+        $data = $this->districtService->getListDistricts($params);
 
         return response()->json([
             'success' => true,
@@ -49,6 +48,59 @@ class DistrictController extends Controller
             $response = [
                 'success' => true,
                 'message' => 'Tạo mới thành công!'
+            ];
+
+            if (!$created) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Có lỗi xảy ra!'
+            ]);
+        }
+    }
+
+    public function updateDistrict(Request $request)
+    {
+        try {
+            $params = $request->only(['name', 'id']);
+            $created = $this->districtService->updateDistrict($params);
+
+            $response = [
+                'success' => true,
+                'message' => 'Chỉnh sửa thành công!'
+            ];
+
+            if (!$created) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Có lỗi xảy ra!'
+            ]);
+        }
+    }
+
+    public function deleteDistrict($id)
+    {
+        try {
+            $created = $this->districtService->deleteDistrict($id);
+
+            $response = [
+                'success' => true,
+                'message' => 'Xóa thành công!'
             ];
 
             if (!$created) {

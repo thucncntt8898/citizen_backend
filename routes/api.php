@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\HamletController;
+use App\Http\Controllers\WardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -31,11 +33,31 @@ Route::group(['middleware' => 'auth.api'], function () {
     Route::prefix('province')->middleware('can:user-permission-province')->group(function () {
         Route::get('list', [ProvinceController::class, 'getListProvinces']);
         Route::post('insert', [ProvinceController::class, 'createProvince']);
+        Route::post('update', [ProvinceController::class, 'updateProvince']);
+        Route::delete('/delete/{id}', [ProvinceController::class, 'deleteProvince']);
     });
 
     Route::prefix('district')->middleware('can:user-permission-district')->group(function () {
         Route::post('insert', [DistrictController::class, 'createDistrict']);
-        Route::get('list/{id}', [DistrictController::class, 'getListDistricts']);
+        Route::get('list', [DistrictController::class, 'getListDistricts']);
+        Route::post('update', [DistrictController::class, 'updateDistrict']);
+        Route::delete('/delete/{id}', [DistrictController::class, 'deleteDistrict']);
+
+    });
+
+    Route::prefix('ward')->middleware('can:user-permission-ward')->group(function () {
+        Route::post('insert', [WardController::class, 'createWard']);
+        Route::get('list', [WardController::class, 'getListWards']);
+        Route::post('update', [WardController::class, 'updateWard']);
+        Route::delete('/delete/{id}', [WardController::class, 'deleteWard']);
+
+    });
+
+    Route::prefix('hamlet')->middleware('can:user-permission-hamlet')->group(function () {
+        Route::get('list', [HamletController::class, 'getListHamlets']);
+        Route::post('insert', [HamletController::class, 'createHamlet']);
+        Route::post('update', [HamletController::class, 'updateHamlet']);
+        Route::delete('/delete/{id}', [HamletController::class, 'deleteHamlet']);
     });
 
     Route::prefix('user')->middleware('can:permission-manage-user')->group(function () {
