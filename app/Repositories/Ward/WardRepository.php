@@ -190,8 +190,7 @@ class WardRepository extends Repository implements WardRepositoryInterface
     public function getStatisticalWardData() {
         $doingWards = count($this->__getStatisticalStatusWardData('doing')->get());
         $doneWards = count($this->__getStatisticalStatusWardData('done')->get());
-        $todoWards =
-            count($this->_model::where('district_id', '=', Auth::user()->district_id)->get()) - $doingWards - $doneWards;
+        $todoWards = count($this->__getStatisticalStatusWardData('todo')->get());
 
 
         $data = $this->__getStatisticalWardData()
@@ -233,6 +232,13 @@ class WardRepository extends Repository implements WardRepositoryInterface
         if ($type == 'done') {
             return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
                 ->where( 'users.hamlet_id', '=', null )
+                ->leftJoin('users', 'users.ward_id', '=', 'wards.id');
+        }
+
+        if ($type == 'todo') {
+            return $this->_model::where( 'users.time_finish','=',null)
+                ->where( 'users.time_start','=',null)
+                ->where( 'users.hamlet_id','=', null )
                 ->leftJoin('users', 'users.ward_id', '=', 'wards.id');
         }
     }

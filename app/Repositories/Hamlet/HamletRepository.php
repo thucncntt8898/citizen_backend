@@ -205,8 +205,7 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
     public function getStatisticalHamletData() {
         $doingHamlets = count($this->__getStatisticalStatusHamletData('doing')->get());
         $doneHamlets = count($this->__getStatisticalStatusHamletData('done')->get());
-        $todoHamlets =
-            count($this->_model::where('district_id', '=', Auth::user()->district_id)->get()) - $doingHamlets - $doneHamlets;
+        $todoHamlets = count($this->__getStatisticalStatusHamletData('todo')->get());
 
         $data = $this->__getStatisticalHamletData()
             ->groupBy('hamlets.id')
@@ -246,6 +245,12 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
 
         if ($type == 'done') {
             return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->leftJoin('users', 'users.hamlet_id', '=', 'hamlets.id');
+        }
+
+        if ($type == 'todo') {
+            return $this->_model::where( 'users.time_finish','=',null)
+                ->where( 'users.time_start','=',null)
                 ->leftJoin('users', 'users.hamlet_id', '=', 'hamlets.id');
         }
     }

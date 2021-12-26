@@ -168,8 +168,7 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
 
         $doingDistricts = count($this->__getStatisticalStatusDistrictData('doing')->get());
         $doneDistricts = count($this->__getStatisticalStatusDistrictData('done')->get());
-        $todoDistricts =
-            count($this->_model::where('province_id', '=', Auth::user()->province_id)->get()) - $doingDistricts - $doneDistricts;
+        $todoDistricts = count($this->__getStatisticalStatusDistrictData('todo')->get());
 
         $data = $this->__getStatisticalDistrictData()
             ->groupBy('districts.id')
@@ -208,6 +207,13 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
 
         if ($type == 'done') {
             return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->where( 'users.ward_id', '=', null )
+                ->leftJoin('users', 'users.district_id', '=', 'districts.id');
+        }
+
+        if ($type == 'todo') {
+            return $this->_model::where( 'users.time_finish', '=', null )
+                ->where( 'users.time_start', '=', null )
                 ->where( 'users.ward_id', '=', null )
                 ->leftJoin('users', 'users.district_id', '=', 'districts.id');
         }

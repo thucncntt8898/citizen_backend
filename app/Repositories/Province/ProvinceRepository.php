@@ -152,7 +152,7 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
         $doingProvinces = count($this->__getStatisticalStatusProvinceData('doing')->get());
         $doneProvinces = count($this->__getStatisticalStatusProvinceData('done')->get());
-        $todoProvinces = count($this->_model->get()) - $doingProvinces - $doneProvinces;
+        $todoProvinces = count($this->__getStatisticalStatusProvinceData('todo')->get());
 
         $data = $this->__getStatisticalProvinceData()
             ->groupBy('provinces.id')
@@ -188,6 +188,12 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
         if ($type == 'done') {
             return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->leftJoin('users', 'users.province_id', '=', 'provinces.id');
+        }
+
+        if ($type == 'todo') {
+            return $this->_model::where( 'users.time_finish','=',null)
+                ->where( 'users.time_start','=',null)
                 ->leftJoin('users', 'users.province_id', '=', 'provinces.id');
         }
     }
