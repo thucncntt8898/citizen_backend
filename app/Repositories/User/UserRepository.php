@@ -3,6 +3,7 @@
 namespace App\Repositories\User;
 
 use App\Repositories\Repository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends Repository implements UserRepositoryInterface
@@ -40,7 +41,8 @@ class UserRepository extends Repository implements UserRepositoryInterface
                 'users.username',
                 'users.status',
                 'users.time_start',
-                'users.time_finish'
+                'users.time_finish',
+                'users.is_completed'
             )
             ->forPage($params['page'], $params['limit'])->get()->toArray();
         return [
@@ -51,20 +53,22 @@ class UserRepository extends Repository implements UserRepositoryInterface
 
     public function __getListUsers($params)
     {
+        $user = Auth::user();
+        $roles = array_values(config('constants.ROLES'));
         $query = $this->_model::leftJoin('provinces', 'provinces.id', '=', 'users.province_id')
             ->leftJoin('districts', 'districts.id', '=', 'users.district_id')
             ->leftJoin('wards', 'wards.id', '=', 'users.ward_id')
             ->leftJoin('hamlets', 'hamlets.id', '=', 'users.hamlet_id')
-            ->where('role', $params['role'] + 1);
-        switch ($params['role']) {
-            case $params['roles'][1]://thanh pho
-                $query = $query->where('districts.province_id', $params['address_id']);
+            ->where('role', $user['role'] + 1);
+        switch ($user['role']) {
+            case $roles[1]://thanh pho
+                $query = $query->where('users.province_id', $user['province_id']);
                 break;
-            case $params['roles'][2]://quan huyen
-                $query = $query->where('wards.district_id', $params['address_id']);
+            case $roles[2]://quan huyen
+                $query = $query->where('users.district_id', $user['district_id']);
                 break;
-            case $params['roles'][3]://phuong xa
-                $query = $query->where('hamlets.ward_id', $params['address_id']);
+            case $roles[3]://phuong xa
+                $query = $query->where('users.ward_id', $user['ward_id']);
                 break;
         }
         return $query;

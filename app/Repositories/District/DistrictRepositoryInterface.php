@@ -12,4 +12,6 @@ interface DistrictRepositoryInterface
 
     public function deleteDistrict($id);
 
+    public function getAllDistricts($provinceId);
+
 }

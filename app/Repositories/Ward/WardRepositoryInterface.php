@@ -12,4 +12,6 @@ interface WardRepositoryInterface
 
     public function deleteWard($id);
 
+    public function getAllWards($provinceId, $districtId);
+
 }

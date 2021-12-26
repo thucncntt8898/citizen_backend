@@ -143,4 +143,9 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
         }
     }
 
+    public function getAllProvinces()
+    {
+        return $this->_model::all()->toArray();
+    }
+
 }

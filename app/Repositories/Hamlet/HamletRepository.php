@@ -147,4 +147,22 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
         }
     }
 
+    public function getAllHamlets($provinceId, $districtId, $wardId)
+    {
+        $query = $this->_model;
+        if (!empty($provinceId)) {
+            $query = $query->where('province_id', $provinceId);
+        }
+
+        if (!empty($districtId)) {
+            $query = $query->where('district_id', $provinceId);
+        }
+
+        if (!empty($wardId)) {
+            $query = $query->where('ward_id', $wardId);
+        }
+
+        return $query->get()->toArray();
+    }
+
 }

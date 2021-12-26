@@ -12,6 +12,7 @@ CREATE TABLE `users` (
      `time_start` datetime DEFAULT NULL ,
      `time_finish` datetime DEFAULT NULL ,
      `status` int(1) NOT NULL DEFAULT 1,
+     `is_completed` int(1) DEFAULT 0,
      PRIMARY KEY (`id`) USING BTREE
 );
 

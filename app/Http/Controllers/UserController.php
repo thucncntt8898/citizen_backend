@@ -60,4 +60,14 @@ class UserController extends Controller
             'message' => 'Cập nhật thành công!'
         ]);
     }
+
+    public function getInfoAddress()
+    {
+        $data = $this->userService->getInfoAddress();
+
+        return response()->json([
+           'success' => true,
+           'data' => $data
+        ]);
+    }
 }

@@ -146,4 +146,17 @@ class WardRepository extends Repository implements WardRepositoryInterface
         }
     }
 
+    public function getAllWards($provinceId, $districtId)
+    {
+        $query = $this->_model;
+        if (!empty($provinceId)) {
+            $query = $query->where('province_id', $provinceId);
+        }
+
+        if (!empty($districtId)) {
+            $query = $query->where('district_id', $provinceId);
+        }
+        return $query->get()->toArray();
+    }
+
 }

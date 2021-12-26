@@ -96,7 +96,7 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
 
     public function __getListDistricts($params)
     {
-        $query = $this->_model::where('districts.province_id', '=', $params['id'])
+        $query = $this->_model::where('districts.province_id', '=', \auth()->user()->province_id)
             ->leftJoin('wards', 'wards.district_id', '=', 'districts.id')
             ->leftJoin('hamlets', 'hamlets.district_id', '=', 'districts.id');
         return $query;
@@ -147,5 +147,13 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
             DB::rollBack();
             return false;
         }
+    }
+
+    public function getAllDistricts($provinceId)
+    {
+        if (!empty($provinceId)) {
+            return $this->_model::where('province_id', $provinceId)->get()->toArray();
+        }
+        return $this->_model::all()->toArray();
     }
 }

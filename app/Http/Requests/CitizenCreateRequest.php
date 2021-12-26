@@ -4,10 +4,7 @@ namespace App\Http\Requests;
 
 use App\Rules\CheckConditionCanOperate;
 use App\Rules\CheckHamletCanOpearate;
-use App\Rules\CheckStatusAccount;
-use App\Rules\CheckTimeCanOperate;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class CitizenCreateRequest extends FormRequest
 {
@@ -31,7 +28,7 @@ class CitizenCreateRequest extends FormRequest
         return [
             'id_card' => 'required|regex:/^\d+$/|digits:12|unique:citizens,id_card|unique',
             'fullname' => 'required|max:255',
-            'dob' => 'before:today',
+            'dob' => 'required|before_or_equal:today',
             'gender' => 'required|max:10',
             'religion' => 'required|max:10',
             'edu_level' => 'required|max:10',

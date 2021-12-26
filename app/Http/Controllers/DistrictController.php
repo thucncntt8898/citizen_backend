@@ -30,7 +30,7 @@ class DistrictController extends Controller
      */
     public function getListDistricts(Request $request)
     {
-        $params = $request->only(['limit', 'page', 'id']);
+        $params = $request->only(['limit', 'page']);
         $data = $this->districtService->getListDistricts($params);
 
         return response()->json([

@@ -65,6 +65,39 @@ class CitizenRepository extends Repository implements CitizenRepositoryInterface
             ->leftJoin('districts', 'districts.id', '=', 'citizens.permanent_address_district')
             ->leftJoin('wards', 'wards.id', '=', 'citizens.permanent_address_ward')
             ->leftJoin('hamlets', 'hamlets.id', '=', 'citizens.permanent_address_hamlet');
+        if (array_key_exists('occupation', $params)) {
+            $query = $query->whereIn('citizens.occupation', $params['occupation']);
+        }
+        if (array_key_exists('id_card', $params) && $params['id_card'] != null) {
+            $query = $query->where('citizens.id_card', 'like', '%' . $params['id_card'] . '%');
+        }
+        if (array_key_exists('fullname', $params) && $params['fullname'] != null) {
+            $query = $query->where('citizens.fullname', 'like', '%' . $params['fullname'] . '%');
+        }
+        if (array_key_exists('dob', $params) && $params['dob'] != null) {
+            $query = $query->where('citizens.dob', $params['dob']);
+        }
+        if (array_key_exists('native_address', $params) && $params['native_address'] != null) {
+            $query = $query->where('citizens.native_address', 'like', '%' . $params['native_address'] . '%');
+        }
+        if (array_key_exists('temp_address', $params) && $params['temp_address'] != null) {
+            $query = $query->where('citizens.temp_address', 'like', '%' . $params['temp_address'] . '%');
+        }
+        if (array_key_exists('gender', $params) && $params['gender'] != null && $params['gender'] != 2) {
+            $query = $query->where('gender', $params['gender']);
+        }
+        if (array_key_exists('permanent_address_province', $params)) {
+            $query = $query->whereIn('citizens.permanent_address_province', $params['permanent_address_province']);
+        }
+        if (array_key_exists('permanent_address_district', $params)) {
+            $query = $query->whereIn('citizens.permanent_address_district', $params['permanent_address_district']);
+        }
+        if (array_key_exists('permanent_address_ward', $params)) {
+            $query = $query->whereIn('citizens.permanent_address_ward', $params['permanent_address_ward']);
+        }
+        if (array_key_exists('permanent_address_hamlet', $params)) {
+            $query = $query->whereIn('citizens.permanent_address_hamlet', $params['permanent_address_hamlet']);
+        }
         switch ($user->role) {
             case $roles[1]://thanh pho
                 $query = $query->where('citizens.permanent_address_province', $user->province_id);

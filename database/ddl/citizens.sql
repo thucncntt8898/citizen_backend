@@ -12,7 +12,7 @@ CREATE TABLE `citizens` (
     `temp_address` varchar(255) NOT NULL,
     `religion` boolean DEFAULT false ,
     `edu_level` varchar(255),
-    `occupation` varchar(255),
+    `occupation` int(11) unsigned default 1,
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`) USING BTREE
