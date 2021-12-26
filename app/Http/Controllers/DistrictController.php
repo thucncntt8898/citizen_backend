@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDistrictRequest;
 use App\Services\DistrictService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class DistrictController extends Controller
         ]);
     }
 
-    public function createDistrict(Request $request)
+    public function createDistrict(StoreDistrictRequest $request)
     {
         try {
             $params = $request->only(['name', 'code']);

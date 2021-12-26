@@ -14,4 +14,5 @@ interface DistrictRepositoryInterface
 
     public function getAllDistricts($provinceId);
 
+    public function getStatisticalDistrictData();
 }

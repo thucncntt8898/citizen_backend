@@ -38,4 +38,8 @@ class ProvinceService extends Service
         return $this->provinceRepository->deleteProvince($id);
     }
 
+    public function getStatisticalProvinceData() {
+        return $this->provinceRepository->getStatisticalProvinceData();
+    }
+
 }

@@ -133,7 +133,7 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
         DB::beginTransaction();
         try {
-            User::where('address_id', $provinceCode)->delete();
+            User::where('province_id', $provinceCode)->delete();
             Province::where('id', $id)->delete();
             DB::commit();
             return true;
@@ -147,5 +147,51 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
     {
         return $this->_model::all()->toArray();
     }
+
+
+    public function getStatisticalProvinceData() {
+
+        $doingProvinces = count($this->__getStatisticalStatusProvinceData('doing')->get());
+        $doneProvinces = count($this->__getStatisticalStatusProvinceData('done')->get());
+        $todoProvinces = count($this->_model->get()) - $doingProvinces - $doneProvinces;
+
+        $data = $this->__getStatisticalProvinceData()
+            ->groupBy('provinces.id')
+            ->select(
+                'provinces.id',
+                'provinces.name',
+                'provinces.code',
+                DB::raw("count(citizens.id) AS total_citizens")
+            )
+            ->orderBy('total_citizens', 'DESC')
+            ->limit(10)
+            ->get()->toArray();
+        $data['doing'] = $doingProvinces;
+        $data['done'] = $doneProvinces;
+        $data['todo'] = $todoProvinces;
+        return [
+            'data_list' => $data,
+        ];
+    }
+
+    public function __getStatisticalProvinceData()
+    {
+        return $this->_model::leftJoin('citizens', 'citizens.permanent_address_province', '=', 'provinces.id');
+    }
+
+    public function __getStatisticalStatusProvinceData($type)
+    {
+        if ($type == 'doing') {
+            return $this->_model::where( 'users.time_finish', '>=', Carbon::now() )
+                ->where( 'users.time_start', '<', Carbon::now() )
+                ->leftJoin('users', 'users.province_id', '=', 'provinces.id');
+        }
+
+        if ($type == 'done') {
+            return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->leftJoin('users', 'users.province_id', '=', 'provinces.id');
+        }
+    }
+
 
 }

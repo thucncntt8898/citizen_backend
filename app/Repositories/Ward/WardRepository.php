@@ -53,8 +53,27 @@ class WardRepository extends Repository implements WardRepositoryInterface
 
     public function __getListWards($params)
     {
-        $query = $this->_model::where('wards.district_id', '=', $params['id'])
-            ->leftJoin('hamlets', 'hamlets.ward_id', '=', 'wards.code');
+        $query = $this->_model;
+
+        if (Auth::user()->district_id != null) {
+            $action = '=';
+            $compare = Auth::user()->district_id;
+        } else {
+            $action = '!=';
+            $compare = 0;
+        }
+
+        if (Auth::user()->province_id != null) {
+            $query = $query->where('wards.province_id','=', Auth::user()->province_id);
+
+        } else {
+            $query = $query->where('wards.province_id','!=', 0);
+        }
+
+
+
+        $query = $query->where('wards.district_id', $action, $compare)
+            ->leftJoin('hamlets', 'hamlets.ward_id', '=', 'wards.id');
 
         if (!empty($params['province_ids'])) {
             $query->whereIn('provinces.id', $params['province_ids']);
@@ -159,4 +178,53 @@ class WardRepository extends Repository implements WardRepositoryInterface
         return $query->get()->toArray();
     }
 
+    public function getStatisticalWardData() {
+        $doingWards = count($this->__getStatisticalStatusWardData('doing')->get());
+        $doneWards = count($this->__getStatisticalStatusWardData('done')->get());
+        $todoWards =
+            count($this->_model::where('district_id', '=', Auth::user()->district_id)->get()) - $doingWards - $doneWards;
+
+
+        $data = $this->__getStatisticalWardData()
+            ->groupBy('wards.id')
+            ->select(
+                'wards.id',
+                'wards.name',
+                'wards.code',
+                DB::raw("count(citizens.id) AS total_citizens")
+            )
+            ->orderBy('total_citizens', 'DESC')
+            ->limit(5)
+            ->get()->toArray();
+
+        $data['doing'] = $doingWards;
+        $data['done'] = $doneWards;
+        $data['todo'] = $todoWards;
+        return [
+            'data_list' => $data
+        ];
+    }
+
+    public function __getStatisticalWardData()
+    {
+        return $this->_model::where('wards.province_id','=',Auth::user()->province_id)
+            ->where('wards.district_id','=',Auth::user()->district_id)
+            ->leftJoin('citizens', 'citizens.permanent_address_ward', '=', 'wards.id');
+    }
+
+    public function __getStatisticalStatusWardData($type)
+    {
+        if ($type == 'doing') {
+            return $this->_model::where( 'users.time_finish', '>=', Carbon::now() )
+                ->where( 'users.time_start', '<', Carbon::now() )
+                ->where( 'users.hamlet_id', '=', null )
+                ->leftJoin('users', 'users.ward_id', '=', 'wards.id');
+        }
+
+        if ($type == 'done') {
+            return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->where( 'users.hamlet_id', '=', null )
+                ->leftJoin('users', 'users.ward_id', '=', 'wards.id');
+        }
+    }
 }

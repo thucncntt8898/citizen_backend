@@ -29,6 +29,23 @@ class AuthServiceProvider extends ServiceProvider
             if ($user->role == config('constants.ROLES.GENERAL')) return true;
         });
 
+        Gate::define('user-permission-province-district', function ($user) {
+            if ($user->role == config('constants.ROLES.GENERAL') || $user->role == config('constants.ROLES.PROVINCE')) return true;
+        });
+
+        Gate::define('user-permission-province-district-ward', function ($user) {
+            if ($user->role == config('constants.ROLES.GENERAL')
+                || $user->role == config('constants.ROLES.PROVINCE')
+                || $user->role == config('constants.ROLES.DISTRICT')) return true;
+        });
+
+        Gate::define('user-permission-province-district-ward-hamlet', function ($user) {
+            if ($user->role == config('constants.ROLES.GENERAL')
+                || $user->role == config('constants.ROLES.PROVINCE')
+                || $user->role == config('constants.ROLES.DISTRICT')
+                || $user->role == config('constants.ROLES.WARD')) return true;
+        });
+
         Gate::define('user-permission-district', function ($user) {
             if ($user->role == config('constants.ROLES.PROVINCE')) return true;
         });

@@ -14,4 +14,6 @@ interface WardRepositoryInterface
 
     public function getAllWards($provinceId, $districtId);
 
+    public function getStatisticalWardData();
+
 }
