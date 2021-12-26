@@ -47,7 +47,10 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('user-permission-district', function ($user) {
-            if ($user->role == config('constants.ROLES.PROVINCE')) return true;
+            if ($user->role != config('constants.ROLES.PROVINCE') ||
+                $user->status == config('constants.STATUS_USER.OFF'))
+                return false;
+            return true;
         });
 
         Gate::define('user-permission-ward', function ($user) {

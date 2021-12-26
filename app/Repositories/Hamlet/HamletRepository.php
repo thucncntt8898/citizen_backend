@@ -33,7 +33,6 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
             ];
         } else {
             $data = $this->__getListHamlets($params)
-                ->groupBy('hamlets.id')
                 ->select(
                     'hamlets.id',
                     'hamlets.name',
@@ -75,7 +74,23 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
         }
         $query = $query->where('hamlets.ward_id', $action, $compare);
         if (!empty($params['province_ids'])) {
-            $query->whereIn('provinces.id', $params['province_ids']);
+            $query = $query->whereIn('hamlets.province_id', $params['province_ids']);
+        }
+
+        if (!empty($params['district_ids'])) {
+            $query = $query->whereIn('hamlets.district_id', $params['district_ids']);
+        }
+
+        if (!empty($params['ward_ids'])) {
+            $query = $query->whereIn('hamlets.id', $params['ward_ids']);
+        }
+
+        if (!empty($params['hamlet_ids'])) {
+            $query = $query->whereIn('hamlets.id', $params['hamlet_ids']);
+        }
+
+        if (!empty($params['code'])) {
+            $query = $query->where('hamlets.code', 'like', '%' . $params['code'] . '%');
         }
         return $query;
 

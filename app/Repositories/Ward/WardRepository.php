@@ -32,7 +32,6 @@ class WardRepository extends Repository implements WardRepositoryInterface
             ];
         } else {
             $data = $this->__getListWards($params)
-                ->groupBy('wards.id')
                 ->select(
                     'wards.id',
                     'wards.name',
@@ -70,13 +69,23 @@ class WardRepository extends Repository implements WardRepositoryInterface
             $query = $query->where('wards.province_id','!=', 0);
         }
 
-
-
         $query = $query->where('wards.district_id', $action, $compare)
             ->leftJoin('hamlets', 'hamlets.ward_id', '=', 'wards.id');
 
         if (!empty($params['province_ids'])) {
-            $query->whereIn('provinces.id', $params['province_ids']);
+            $query = $query->whereIn('wards.province_id', $params['province_ids']);
+        }
+
+        if (!empty($params['district_ids'])) {
+            $query = $query->whereIn('wards.district_id', $params['district_ids']);
+        }
+
+        if (!empty($params['ward_ids'])) {
+            $query = $query->whereIn('wards.id', $params['ward_ids']);
+        }
+
+        if (!empty($params['code'])) {
+            $query = $query->where('wards.code', 'like', '%' . $params['code'] . '%');
         }
         return $query;
 

@@ -31,6 +31,11 @@ class HamletController extends Controller
      */
     public function getListHamlets(Request $request)
     {
+        $params['province_ids'] = isset($request->province_ids) && empty(array_filter($request->province_ids)) ? [] : $request->province_ids;
+        $params['district_ids'] = isset($request->district_ids) && empty(array_filter($request->district_ids)) ? [] : $request->district_ids;
+        $params['ward_ids'] = isset($request->ward_ids) && empty(array_filter($request->ward_ids)) ? [] : $request->ward_ids;
+        $params['hamlet_ids'] = isset($request->hamlet_ids) && empty(array_filter($request->hamlet_ids)) ? [] : $request->hamlet_ids;
+        $params['code'] = empty($request->code) ? '' : $request->code;
         $params['page'] = empty($request->page) ? 10 : $request->page;
         $params['limit'] = empty($request->limit) ? 1 : $request->limit;
         $params['id'] = $request->id;

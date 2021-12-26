@@ -67,7 +67,6 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
             ];
         } else {
             $data = $this->__getListDistricts($params)
-                ->groupBy('districts.id')
                 ->select(
                     'districts.id',
                     'districts.name',
@@ -103,9 +102,18 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
             $action = '!=';
             $compare = 0;
         }
-        $query = $this->_model::where('districts.province_id', $action, $compare)
-            ->leftJoin('wards', 'wards.district_id', '=', 'districts.id')
-            ->leftJoin('hamlets', 'hamlets.district_id', '=', 'districts.id');
+        $query = $this->_model::where('districts.province_id', $action, $compare);
+        if (!empty($params['province_ids'])) {
+            $query = $query->whereIn('districts.province_id', $params['province_ids']);
+        }
+
+        if (!empty($params['district_ids'])) {
+            $query = $query->whereIn('districts.id', $params['district_ids']);
+        }
+
+        if (!empty($params['code'])) {
+            $query = $query->where('districts.code', 'like', '%' . $params['code'] . '%');
+        }
         return $query;
     }
 

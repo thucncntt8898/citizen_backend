@@ -26,7 +26,7 @@ class CitizenCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_card' => 'required|regex:/^\d+$/|digits:12|unique:citizens,id_card|unique',
+            'id_card' => 'required|regex:/^\d+$/|digits:12|unique:citizens,id_card|unique:citizens,id_card',
             'fullname' => 'required|max:255',
             'dob' => 'required|before_or_equal:today',
             'gender' => 'required|max:10',

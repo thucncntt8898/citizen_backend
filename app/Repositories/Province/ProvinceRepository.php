@@ -33,7 +33,6 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
             ];
         } else {
             $data = $this->__getListProvinces($params)
-                ->groupBy('provinces.id')
                 ->select(
                     'provinces.id',
                     'provinces.name',
