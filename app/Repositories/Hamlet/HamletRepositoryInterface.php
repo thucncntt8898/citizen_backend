@@ -12,4 +12,5 @@ interface HamletRepositoryInterface
 
     public function deleteHamlet($id);
 
+    public function getStatisticalHamletData();
 }

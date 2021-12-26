@@ -169,4 +169,52 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
         }
     }
 
+    public function getStatisticalHamletData() {
+        $doingHamlets = count($this->__getStatisticalStatusHamletData('doing')->get());
+        $doneHamlets = count($this->__getStatisticalStatusHamletData('done')->get());
+        $todoHamlets =
+            count($this->_model::where('district_id', '=', Auth::user()->district_id)->get()) - $doingHamlets - $doneHamlets;
+
+        $data = $this->__getStatisticalHamletData()
+            ->groupBy('hamlets.id')
+            ->select(
+                'hamlets.id',
+                'hamlets.name',
+                'hamlets.code',
+                DB::raw("count(citizens.id) AS total_citizens")
+            )
+            ->orderBy('total_citizens', 'DESC')
+            ->limit(5)
+            ->get()->toArray();
+
+        $data['doing'] = $doingHamlets;
+        $data['done'] = $doneHamlets;
+        $data['todo'] = $todoHamlets;
+        return [
+            'data_list' => $data
+        ];
+    }
+
+    public function __getStatisticalHamletData()
+    {
+        return $this->_model::where('hamlets.province_id','=',Auth::user()->province_id)
+            ->where('hamlets.district_id','=',Auth::user()->district_id)
+            ->where('hamlets.ward_id','=',Auth::user()->ward_id)
+            ->leftJoin('citizens', 'citizens.permanent_address_hamlet', '=', 'hamlets.id');
+    }
+
+    public function __getStatisticalStatusHamletData($type)
+    {
+        if ($type == 'doing') {
+            return $this->_model::where( 'users.time_finish', '>=', Carbon::now() )
+                ->where( 'users.time_start', '<', Carbon::now() )
+                ->leftJoin('users', 'users.hamlet_id', '=', 'hamlets.id');
+        }
+
+        if ($type == 'done') {
+            return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->leftJoin('users', 'users.hamlet_id', '=', 'hamlets.id');
+        }
+    }
+
 }

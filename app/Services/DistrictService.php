@@ -38,4 +38,8 @@ class DistrictService extends Service
         return $this->districtRepository->deleteDistrict($params);
     }
 
+    public function getStatisticalDistrictData() {
+        return $this->districtRepository->getStatisticalDistrictData();
+    }
+
 }

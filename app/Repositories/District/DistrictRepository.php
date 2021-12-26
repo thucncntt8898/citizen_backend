@@ -155,4 +155,53 @@ class DistrictRepository extends Repository implements DistrictRepositoryInterfa
             return false;
         }
     }
+
+    public function getStatisticalDistrictData() {
+
+        $doingDistricts = count($this->__getStatisticalStatusDistrictData('doing')->get());
+        $doneDistricts = count($this->__getStatisticalStatusDistrictData('done')->get());
+        $todoDistricts =
+            count($this->_model::where('province_id', '=', Auth::user()->province_id)->get()) - $doingDistricts - $doneDistricts;
+
+        $data = $this->__getStatisticalDistrictData()
+            ->groupBy('districts.id')
+            ->select(
+                'districts.id',
+                'districts.name',
+                'districts.code',
+                DB::raw("count(citizens.id) AS total_citizens")
+            )
+            ->orderBy('total_citizens', 'DESC')
+            ->limit(10)
+            ->get()->toArray();
+
+        $data['doing'] = $doingDistricts;
+        $data['done'] = $doneDistricts;
+        $data['todo'] = $todoDistricts;
+        return [
+            'data_list' => $data
+        ];
+    }
+
+    public function __getStatisticalDistrictData()
+    {
+        return $this->_model::where('districts.province_id','=',Auth::user()->province_id)
+            ->leftJoin('citizens', 'citizens.permanent_address_district', '=', 'districts.id');
+    }
+
+    public function __getStatisticalStatusDistrictData($type)
+    {
+        if ($type == 'doing') {
+            return $this->_model::where( 'users.time_finish', '>=', Carbon::now() )
+                ->where( 'users.time_start', '<', Carbon::now() )
+                ->where( 'users.ward_id', '=', null )
+                ->leftJoin('users', 'users.district_id', '=', 'districts.id');
+        }
+
+        if ($type == 'done') {
+            return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->where( 'users.ward_id', '=', null )
+                ->leftJoin('users', 'users.district_id', '=', 'districts.id');
+        }
+    }
 }

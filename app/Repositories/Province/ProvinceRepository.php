@@ -143,10 +143,13 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
         }
     }
 
-    /**
-     *
-     */
+
     public function getStatisticalProvinceData() {
+
+        $doingProvinces = count($this->__getStatisticalStatusProvinceData('doing')->get());
+        $doneProvinces = count($this->__getStatisticalStatusProvinceData('done')->get());
+        $todoProvinces = count($this->_model->get()) - $doingProvinces - $doneProvinces;
+
         $data = $this->__getStatisticalProvinceData()
             ->groupBy('provinces.id')
             ->select(
@@ -157,9 +160,12 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
             )
             ->orderBy('total_citizens', 'DESC')
             ->limit(10)
-            ->get();
+            ->get()->toArray();
+        $data['doing'] = $doingProvinces;
+        $data['done'] = $doneProvinces;
+        $data['todo'] = $todoProvinces;
         return [
-            'data_list' => $data->toArray()
+            'data_list' => $data,
         ];
     }
 
@@ -167,5 +173,20 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
     {
         return $this->_model::leftJoin('citizens', 'citizens.permanent_address_province', '=', 'provinces.id');
     }
+
+    public function __getStatisticalStatusProvinceData($type)
+    {
+        if ($type == 'doing') {
+            return $this->_model::where( 'users.time_finish', '>=', Carbon::now() )
+                ->where( 'users.time_start', '<', Carbon::now() )
+                ->leftJoin('users', 'users.province_id', '=', 'provinces.id');
+        }
+
+        if ($type == 'done') {
+            return $this->_model::where( 'users.time_finish', '<', Carbon::now() )
+                ->leftJoin('users', 'users.province_id', '=', 'provinces.id');
+        }
+    }
+
 
 }

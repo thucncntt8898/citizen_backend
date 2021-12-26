@@ -12,4 +12,5 @@ interface DistrictRepositoryInterface
 
     public function deleteDistrict($id);
 
+    public function getStatisticalDistrictData();
 }

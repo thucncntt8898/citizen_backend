@@ -38,4 +38,9 @@ class HamletService extends Service
         return $this->hamletRepository->deleteHamlet($id);
     }
 
+    public function getStatisticalHamletData() {
+        return $this->hamletRepository->getStatisticalHamletData();
+    }
+
+
 }

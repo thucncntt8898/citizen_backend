@@ -39,4 +39,8 @@ class WardService extends Service
         return $this->wardRepository->deleteWard($params);
     }
 
+    public function getStatisticalWardData() {
+        return $this->wardRepository->getStatisticalWardData();
+    }
+
 }
