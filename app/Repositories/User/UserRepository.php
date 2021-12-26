@@ -71,6 +71,33 @@ class UserRepository extends Repository implements UserRepositoryInterface
                 $query = $query->where('users.ward_id', $user['ward_id']);
                 break;
         }
+        if (!empty($params['province_ids'])) {
+            $query = $query->whereIn('users.province_id', $params['province_ids']);
+        }
+
+        if (!empty($params['district_ids'])) {
+            $query = $query->whereIn('users.district_id', $params['district_ids']);
+        }
+
+        if (!empty($params['ward_ids'])) {
+            $query = $query->whereIn('users.ward_id', $params['ward_ids']);
+        }
+
+        if (!empty($params['hamlet_ids'])) {
+            $query = $query->whereIn('users.hamlet_id', $params['hamlet_ids']);
+        }
+
+        if (!empty($params['username'])) {
+            $query = $query->where('users.username', 'like', '%' . $params['username'] . '%');
+        }
+
+        if ($params['status'] != 0) {
+            $query = $query->where('users.status', $params['status']);
+        }
+
+        if ($params['is_completed'] != 0) {
+            $query = $query->where('users.is_completed', $params['is_completed']);
+        }
         return $query;
     }
 

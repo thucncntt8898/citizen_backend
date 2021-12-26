@@ -26,6 +26,9 @@ class UserController extends Controller
         $params['district_ids'] = isset($request->district_ids) && empty(array_filter($request->district_ids)) ? [] : $request->district_ids;
         $params['ward_ids'] = isset($request->ward_ids) && empty(array_filter($request->ward_ids)) ? [] : $request->ward_ids;
         $params['hamlet_ids'] = isset($request->hamlet_ids) && empty(array_filter($request->hamlet_ids)) ? [] : $request->hamlet_ids;
+        $params['username'] = empty($request->username) ? '' : $request->username;
+        $params['status'] = empty($request->status) ? 0 : $request->status;
+        $params['is_completed'] = empty($request->is_completed) ? 0 : $request->is_completed;
         $params['page'] = empty($request->page) ? 10 : $request->page;
         $params['limit'] = empty($request->limit) ? 1 : $request->limit;
         $data = $this->userService->getListUsers($params);

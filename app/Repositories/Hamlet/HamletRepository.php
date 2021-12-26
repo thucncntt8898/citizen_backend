@@ -82,7 +82,7 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
         }
 
         if (!empty($params['ward_ids'])) {
-            $query = $query->whereIn('hamlets.id', $params['ward_ids']);
+            $query = $query->whereIn('hamlets.ward_id', $params['ward_ids']);
         }
 
         if (!empty($params['hamlet_ids'])) {
