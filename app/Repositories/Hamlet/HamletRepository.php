@@ -51,7 +51,29 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
 
     public function __getListHamlets($params)
     {
-        $query = $this->_model::where('hamlets.ward_id', '=', $params['id']);
+        $query = $this->_model;
+
+        if (Auth::user()->province_id != null) {
+            $query = $query->where('hamlets.province_id', Auth::user()->province_id);
+        } else {
+            $query = $query->where('hamlets.province_id','!=', 0);
+        }
+
+        if (Auth::user()->district_id != null) {
+            $query = $query->where('hamlets.district_id', Auth::user()->district_id);
+
+        } else {
+            $query = $query->where('hamlets.district_id','!=', 0);
+        }
+
+        if (Auth::user()->ward_id != null) {
+            $action = '=';
+            $compare = Auth::user()->ward_id;
+        } else {
+            $action = '!=';
+            $compare = 0;
+        }
+        $query = $query->where('hamlets.ward_id', $action, $compare);
         if (!empty($params['province_ids'])) {
             $query->whereIn('provinces.id', $params['province_ids']);
         }

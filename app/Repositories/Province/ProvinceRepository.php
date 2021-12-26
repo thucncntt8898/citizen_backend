@@ -156,21 +156,16 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
                 DB::raw("count(citizens.id) AS total_citizens")
             )
             ->orderBy('total_citizens', 'DESC')
+            ->limit(10)
             ->get();
-
-
-        dd($data->toArray());
         return [
             'data_list' => $data->toArray()
         ];
-
-
-
     }
 
     public function __getStatisticalProvinceData()
     {
-        return $this->_model::leftJoin('citizens', 'citizens.province_id', '=', 'provinces.id');
+        return $this->_model::leftJoin('citizens', 'citizens.permanent_address_province', '=', 'provinces.id');
     }
 
 }

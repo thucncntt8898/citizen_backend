@@ -39,7 +39,11 @@ class HomeController extends Controller
 
                 $data = $this->provinceService->getStatisticalProvinceData();
 
-                dd($data);
+                return response()->json([
+                    'success' => true,
+                    'data' => $data
+                ]);
+
                 break;
             case config('constants.ROLES.PROVINCE'):
                 break;

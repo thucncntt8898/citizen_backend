@@ -38,6 +38,7 @@ class UserController extends Controller
 
     /**
      * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function updateUser(Request $request)
     {

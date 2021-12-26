@@ -53,8 +53,27 @@ class WardRepository extends Repository implements WardRepositoryInterface
 
     public function __getListWards($params)
     {
-        $query = $this->_model::where('wards.district_id', '=', $params['id'])
-            ->leftJoin('hamlets', 'hamlets.ward_id', '=', 'wards.code');
+        $query = $this->_model;
+
+        if (Auth::user()->district_id != null) {
+            $action = '=';
+            $compare = Auth::user()->district_id;
+        } else {
+            $action = '!=';
+            $compare = 0;
+        }
+
+        if (Auth::user()->province_id != null) {
+            $query = $query->where('wards.province_id','=', Auth::user()->province_id);
+
+        } else {
+            $query = $query->where('wards.province_id','!=', 0);
+        }
+
+
+
+        $query = $query->where('wards.district_id', $action, $compare)
+            ->leftJoin('hamlets', 'hamlets.ward_id', '=', 'wards.id');
 
         if (!empty($params['province_ids'])) {
             $query->whereIn('provinces.id', $params['province_ids']);
