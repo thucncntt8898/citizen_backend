@@ -42,5 +42,9 @@ class HamletService extends Service
         return $this->hamletRepository->getStatisticalHamletData();
     }
 
+    public function completeStatistical($params) {
+        return $this->hamletRepository->completeStatistical($params);
+    }
+
 
 }
