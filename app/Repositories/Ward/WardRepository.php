@@ -69,8 +69,7 @@ class WardRepository extends Repository implements WardRepositoryInterface
             $query = $query->where('wards.province_id','!=', 0);
         }
 
-        $query = $query->where('wards.district_id', $action, $compare)
-            ->leftJoin('hamlets', 'hamlets.ward_id', '=', 'wards.id');
+        $query = $query->where('wards.district_id', $action, $compare);
 
         if (!empty($params['province_ids'])) {
             $query = $query->whereIn('wards.province_id', $params['province_ids']);
