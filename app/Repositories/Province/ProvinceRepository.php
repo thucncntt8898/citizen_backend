@@ -68,9 +68,7 @@ class ProvinceRepository extends Repository implements ProvinceRepositoryInterfa
 
     public function __getListProvinces($params)
     {
-        $query = $this->_model::leftJoin('districts', 'districts.province_id', '=', 'provinces.id')
-            ->leftJoin('wards', 'wards.province_id', '=', 'provinces.id')
-            ->leftJoin('hamlets', 'hamlets.province_id', '=', 'provinces.id');
+        $query = $this->_model;
         if (!empty($params['province_ids'])) {
             $query->whereIn('provinces.id', $params['province_ids']);
         }
