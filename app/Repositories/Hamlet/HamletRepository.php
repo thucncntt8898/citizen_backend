@@ -250,4 +250,20 @@ class HamletRepository extends Repository implements HamletRepositoryInterface
         }
     }
 
+    public function completeStatistical($params) {
+        DB::beginTransaction();
+        try {
+            User::where('hamlet_id', Auth::user()->hamlet_id)->update(
+                [
+                    'is_completed' => $params['status'] == "true" ? 1 : 0,
+                    'updated_at' => Carbon::now()
+                ]);
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
 }

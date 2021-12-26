@@ -71,6 +71,8 @@ Route::group(['middleware' => 'auth.api'], function () {
         Route::get('get-info-address', [UserController::class, 'getInfoAddress']);
     });
 
+    Route::post('hamlet/complete', [HamletController::class, 'completeStatistical'])->middleware('can:create-citizen');
+
     Route::prefix('citizen')->group(function () {
         Route::get('list', [CitizenController::class, 'getListCitizens']);
         Route::post('insert', [CitizenController::class, 'createCitizen'])->middleware('can:create-citizen');

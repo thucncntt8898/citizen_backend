@@ -127,4 +127,30 @@ class HamletController extends Controller
         }
     }
 
+    public function completeStatistical(Request $request) {
+        try {
+            $params = $request->only(['status']);
+            $complete = $this->hamletService->completeStatistical($params);
+
+            $response = [
+                'success' => true,
+                'message' => 'Chỉnh sửa thành công!'
+            ];
+
+            if (!$complete) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra!'
+                ];
+            }
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Có lỗi xảy ra!'
+            ]);
+        }
+    }
+
 }
