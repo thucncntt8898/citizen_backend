@@ -27,4 +27,11 @@ class CitizenService extends Service
         $this->citizenRepository->create($params);
     }
 
+    public function updateCitizen($params)
+    {
+        $id = $params['id'];
+        unset($params['id']);
+        $this->citizenRepository->update($id, $params);
+    }
+
 }

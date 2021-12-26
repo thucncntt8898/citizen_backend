@@ -32,6 +32,7 @@ Route::prefix('auth')->group(function () {
 
 Route::group(['middleware' => 'auth.api'], function () {
     Route::get('home', [HomeController::class, 'getStatisticalData']);
+    Route::get('user/get-info-address', [UserController::class, 'getInfoAddress']);
 
     Route::get('/district/list', [DistrictController::class, 'getListDistricts'])
         ->middleware('can:user-permission-province-district');
@@ -68,14 +69,17 @@ Route::group(['middleware' => 'auth.api'], function () {
     Route::prefix('user')->middleware('can:permission-manage-user')->group(function () {
         Route::get('list', [UserController::class, 'getListUsers']);
         Route::post('update', [UserController::class, 'updateUser']);
-        Route::get('get-info-address', [UserController::class, 'getInfoAddress']);
     });
 
     Route::post('hamlet/complete', [HamletController::class, 'completeStatistical'])->middleware('can:create-citizen');
 
     Route::prefix('citizen')->group(function () {
         Route::get('list', [CitizenController::class, 'getListCitizens']);
-        Route::post('insert', [CitizenController::class, 'createCitizen'])->middleware('can:create-citizen');
+        Route::middleware('can:create-citizen')->group(function() {
+            Route::post('insert', [CitizenController::class, 'createCitizen']);
+            Route::post('update', [CitizenController::class, 'updateCitizen']);
+            Route::post('delete', [CitizenController::class, 'deleteCitizen']);
+        });
     });
 
     Route::prefix('occupation')->group(function () {

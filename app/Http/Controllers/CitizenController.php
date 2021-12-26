@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CitizenCreateRequest;
+use App\Http\Requests\CitizenUpdateRequest;
 use App\Services\CitizenService;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,17 @@ class CitizenController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tạo mới thành công!'
+        ]);
+    }
+
+    public function updateCitizen(CitizenUpdateRequest $request)
+    {
+        $params = $request->all();
+        $this->citizenService->updateCitizen($params);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật thành công!'
         ]);
     }
 }

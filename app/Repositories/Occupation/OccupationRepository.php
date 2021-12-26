@@ -23,6 +23,6 @@ class OccupationRepository extends Repository implements OccupationRepositoryInt
             $query = $query->where('name', 'like', "%$name%");
         }
         return $query->forPage(1, 30)
-            ->get()->toArray();
+            ->select('id', 'name')->get()->toArray();
     }
 }

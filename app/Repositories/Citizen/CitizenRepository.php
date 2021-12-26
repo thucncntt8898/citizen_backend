@@ -47,7 +47,9 @@ class CitizenRepository extends Repository implements CitizenRepositoryInterface
                 'wards.id as ward_id',
                 'wards.name as ward_name',
                 'hamlets.id as hamlet_id',
-                'hamlets.name as hamlet_name'
+                'hamlets.name as hamlet_name',
+                'occupations.id as occupation_id',
+                'occupations.name as occupation_name',
             )
             ->forPage($params['page'], $params['limit'])->get()->toArray();
 
@@ -64,7 +66,8 @@ class CitizenRepository extends Repository implements CitizenRepositoryInterface
         $query = $this->_model::leftJoin('provinces', 'provinces.id', '=', 'citizens.permanent_address_province')
             ->leftJoin('districts', 'districts.id', '=', 'citizens.permanent_address_district')
             ->leftJoin('wards', 'wards.id', '=', 'citizens.permanent_address_ward')
-            ->leftJoin('hamlets', 'hamlets.id', '=', 'citizens.permanent_address_hamlet');
+            ->leftJoin('hamlets', 'hamlets.id', '=', 'citizens.permanent_address_hamlet')
+            ->leftJoin('occupations', 'occupations.id', '=', 'citizens.occupation');
         if (array_key_exists('occupation', $params)) {
             $query = $query->whereIn('citizens.occupation', $params['occupation']);
         }
